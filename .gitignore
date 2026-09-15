@@ -1,0 +1,20 @@
+# Build artifacts
+native/obj/
+bin/*.exp
+bin/*.lib
+bin/*_new.*
+
+# Upstream reference copy (not needed in repo)
+native/_upstream/
+
+# Old failed approach
+archive/
+
+# Logs
+*.log
+
+# OS / IDE
+Thumbs.db
+Desktop.ini
+.vs/
+*.user

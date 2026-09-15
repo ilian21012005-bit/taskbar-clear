@@ -1,0 +1,8 @@
+LIBRARY TaskbarClear
+EXPORTS
+    DllGetClassObject PRIVATE
+    DllCanUnloadNow PRIVATE
+    SetTaskbarTransparent
+    SetTaskbarAcrylic
+    SetTaskbarDefault
+    GetTaskbarTAPVersion
