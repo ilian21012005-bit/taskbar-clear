@@ -1,30 +1,45 @@
 #Requires -Version 5.1
-# Planifie inject-once.exe a l'ouverture de session (LoadLibrary dans explorer, puis exit).
-# RunLevel = Limited obligatoire (meme integrite qu'Explorer).
+# Planifie l'injection TaskbarClear a l'ouverture de session (+30 s).
+# RunLevel = Limited (meme integrite qu'Explorer).
 [CmdletBinding()]
-param()
+param(
+    [switch]$SkipDefenderExclusion
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$wrapper = Join-Path $here 'apply-at-logon.ps1'
 $exe = Join-Path $here 'bin\inject-once.exe'
 $dll = Join-Path $here 'bin\TaskbarClear.dll'
 $taskName = 'TransparentTaskbar-Once'
 
 if (-not (Test-Path -LiteralPath $exe)) {
-    throw "inject-once.exe introuvable : $exe. Lance native\build.cmd d'abord."
+    throw "inject-once.exe introuvable : $exe. Restaure depuis git ou lance native\build.cmd."
 }
 if (-not (Test-Path -LiteralPath $dll)) {
     throw "TaskbarClear.dll introuvable : $dll"
 }
+if (-not (Test-Path -LiteralPath $wrapper)) {
+    throw "apply-at-logon.ps1 introuvable : $wrapper"
+}
+
+if (-not $SkipDefenderExclusion) {
+    Write-Host 'Important : Windows Defender peut mettre inject-once.exe en quarantaine (faux positif).'
+    Write-Host 'Lance add-defender-exclusion.ps1 en admin avant le prochain reboot.'
+    Write-Host ''
+}
 
 Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+cmd /c "schtasks /Delete /TN `"$taskName`" /F >nul 2>nul"
 
 $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Limited
-$action = New-ScheduledTaskAction -Execute $exe
+$action = New-ScheduledTaskAction `
+    -Execute 'powershell.exe' `
+    -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$wrapper`""
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
-$trigger.Delay = 'PT15S'
+$trigger.Delay = 'PT30S'
 $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries `
@@ -39,11 +54,15 @@ Register-ScheduledTask `
     -Trigger $trigger `
     -Principal $principal `
     -Settings $settings `
-    -Description 'Injecte TaskbarClear.dll dans explorer.exe une fois a la session, puis se termine.' `
+    -Description 'Injecte TaskbarClear.dll dans explorer.exe au logon (+30s), puis se termine.' `
     | Out-Null
 
 $info = Get-ScheduledTask -TaskName $taskName
 Write-Host ("Tache installee : {0}" -f $info.TaskName)
-Write-Host 'Declencheur     : ouverture de session +15s'
+Write-Host 'Declencheur     : ouverture de session +30s'
 Write-Host ("RunLevel        : {0}" -f $info.Principal.RunLevel)
-Write-Host 'Apres injection : seul TaskbarClear.dll reste dans explorer.exe.'
+Write-Host 'Journal logon   : %LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log'
+Write-Host ''
+Write-Host 'Si la barre reste opaque au boot :'
+Write-Host '  1. .\add-defender-exclusion.ps1   (admin, une fois)'
+Write-Host '  2. .\apply.cmd'

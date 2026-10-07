@@ -34,7 +34,33 @@ Sur Win11 25H2, `SetWindowCompositionAttribute` seul ne suffit plus (barre XAML)
 apply.cmd
 ```
 
-La barre devient transparente. Au prochain login, c'est automatique (+15 s).
+La barre devient transparente. Au prochain login, c'est automatique (+30 s).
+
+**Windows Defender** peut classer `inject-once.exe` en trojan (faux positif `Bearfoos.A!ml`) et bloquer la tâche planifiée au démarrage. **Obligatoire une fois** :
+
+```powershell
+.\add-defender-exclusion.ps1   # demande admin
+```
+
+Log démarrage : `%LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log`
+
+## Profil visuel perf (animations OFF)
+
+Scripts natifs **sans processus résident** — tweaks registre HKCU uniquement, gratuit en FPS.
+
+```powershell
+.\visual-clean\apply-visual-clean.ps1          # applique maintenant (+ sauvegarde)
+.\visual-clean\install-visual-clean-task.ps1   # auto au logon (+5 s)
+```
+
+Désactive : animations système, ombres/fades, animations barre des tâches, Aero Peek, contenu fenêtre pendant le drag. **Conserve** `EnableTransparency` pour TaskbarClear.
+
+Restauration :
+
+```powershell
+.\visual-clean\restore-visual-clean.ps1
+.\visual-clean\uninstall-visual-clean-task.ps1 -RestoreDefaults
+```
 
 ## Désinstallation
 
