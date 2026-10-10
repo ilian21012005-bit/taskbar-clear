@@ -1,119 +1,137 @@
 # TaskbarClear
 
-Barre des tâches **100 % transparente** (mode Clear) sur **Windows 11 24H2/25H2**, sans TranslucentTB ni Windhawk.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Windows 11](https://img.shields.io/badge/Windows-11%20(22H2%2B)-0078D4)](https://www.microsoft.com/windows)
 
-- **Aucun processus résident** — `inject-once.exe` s'exécute ~200 ms au logon, puis se termine
-- **Aucun hook global** sur les fenêtres / jeux — seule une petite DLL reste dans `explorer.exe`
-- **Impact frametime négligeable** vs un outil qui surveille focus / maximisation en permanence
+Barre des taches **100 % transparente** (mode Clear) sur **Windows 11**, sans TranslucentTB ni Windhawk.
 
-## Comment ça marche
+- **Zero processus resident** — injection ~200 ms au logon, puis exit
+- **Pas de hook global** sur fenetres / jeux — petite DLL dans `explorer.exe` uniquement
+- **Optionnel** : profil `visual-clean` (animations OFF, registre HKCU)
 
-```text
-Logon (+15 s) → inject-once.exe → LoadLibrary(TaskbarClear.dll) → exit
-                                      ↓
-                            explorer.exe (XAML TAP)
-                                      ↓
-                     BackgroundFill / BackgroundStroke → Transparent
-```
+> **Avertissement** : technique d'injection DLL dans Explorer (API non officielle Microsoft). Lisez [SECURITY.md](SECURITY.md) avant installation.
 
-Sur Win11 25H2, `SetWindowCompositionAttribute` seul ne suffit plus (barre XAML). TaskbarClear injecte un **TAP XAML Diagnostics** dans Explorer, comme TranslucentTB, mais **sans worker WinEvent** ni tray icon.
+## Prerequis
 
-## Installation rapide (binaires précompilés)
+| Element | Detail |
+|---------|--------|
+| OS | Windows 11, build **22621+** (22H2+) |
+| Droits | Utilisateur standard (admin **uniquement** pour exclusion Defender) |
+| Antivirus | Faux positif frequent sur `inject-once.exe` — voir ci-dessous |
 
-1. Télécharge / clone ce repo
-2. Ouvre PowerShell **sans admin** dans le dossier du projet
-3. Installe la tâche planifiée :
+## Installation (recommandee)
 
 ```powershell
+git clone https://github.com/ilian21012005-bit/taskbar-clear.git
+cd taskbar-clear
+.\setup.ps1
+```
+
+Le script :
+
+1. Verifie OS et binaires
+2. Propose l'exclusion Defender (fortement recommande)
+3. Installe la tache `TransparentTaskbar-Once` (logon +30 s)
+4. Applique Clear immediatement
+
+### Etape Defender (important)
+
+Windows Defender peut classer `inject-once.exe` en trojan (`Bearfoos.A!ml`) et **empecher le demarrage auto** :
+
+```powershell
+.\add-defender-exclusion.ps1   # admin, une fois
+```
+
+### Installation manuelle
+
+```powershell
+.\add-defender-exclusion.ps1    # admin
 .\install-task.ps1
-```
-
-4. Applique tout de suite (optionnel) :
-
-```cmd
-apply.cmd
-```
-
-La barre devient transparente. Au prochain login, c'est automatique (+30 s).
-
-**Windows Defender** peut classer `inject-once.exe` en trojan (faux positif `Bearfoos.A!ml`) et bloquer la tâche planifiée au démarrage. **Obligatoire une fois** :
-
-```powershell
-.\add-defender-exclusion.ps1   # demande admin
-```
-
-Log démarrage : `%LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log`
-
-## Profil visuel perf (animations OFF)
-
-Scripts natifs **sans processus résident** — tweaks registre HKCU uniquement, gratuit en FPS.
-
-```powershell
-.\visual-clean\apply-visual-clean.ps1          # applique maintenant (+ sauvegarde)
-.\visual-clean\install-visual-clean-task.ps1   # auto au logon (+5 s)
-```
-
-Désactive : animations système, ombres/fades, animations barre des tâches, Aero Peek, contenu fenêtre pendant le drag. **Conserve** `EnableTransparency` pour TaskbarClear.
-
-Restauration :
-
-```powershell
-.\visual-clean\restore-visual-clean.ps1
-.\visual-clean\uninstall-visual-clean-task.ps1 -RestoreDefaults
-```
-
-## Désinstallation
-
-```powershell
-.\uninstall-task.ps1 -RestartExplorer
-```
-
-Redémarre Explorer → la DLL est déchargée, la barre revient au rendu Windows par défaut.
-
-## Compiler soi-même
-
-Prérequis : **Visual Studio 2022 Build Tools** (C++ desktop + Windows SDK).
-
-```powershell
-.\native\build.ps1
-```
-
-Sortie : `bin\TaskbarClear.dll` + `bin\inject-once.exe`
-
-Si la DLL est verrouillée dans Explorer :
-
-```powershell
-.\uninstall-task.ps1 -RestartExplorer
-.\native\build.ps1
 .\apply.cmd
 ```
 
-## Fichiers
+## Desinstallation
 
-| Fichier | Rôle |
-|---------|------|
-| `bin/inject-once.exe` | Injecteur one-shot (CreateRemoteThread + LoadLibraryW) |
-| `bin/TaskbarClear.dll` | TAP XAML Clear-only dans Explorer |
-| `install-task.ps1` | Tâche planifiée `TransparentTaskbar-Once` (logon +15 s) |
-| `apply.cmd` | Réinjecte manuellement |
-| `uninstall-task.ps1` | Supprime la tâche (+ option restart Explorer) |
+```powershell
+.\uninstall-all.ps1 -RestartExplorer
+```
+
+Avec restauration des effets visuels (si `visual-clean` installe) :
+
+```powershell
+.\uninstall-all.ps1 -RestartExplorer -RestoreVisualDefaults
+```
+
+## Verifier que tout fonctionne
+
+```powershell
+.\scripts\verify-installation.ps1
+.\scripts\verify-checksums.ps1
+```
+
+Journal logon : `%LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log`
+
+## Comment ca marche
+
+```text
+Logon (+30 s) → apply-at-logon.ps1 → inject-once.exe → LoadLibrary(TaskbarClear.dll) → exit
+                                                      ↓
+                                            explorer.exe (TAP XAML)
+                                                      ↓
+                               BackgroundFill / BackgroundStroke → Transparent
+```
+
+Sur Win11 25H2, `SetWindowCompositionAttribute` seul ne suffit plus (barre XAML opaque).
+
+## Profil visual-clean (optionnel)
+
+Tweaks registre **sans processus resident** :
+
+```powershell
+.\visual-clean\apply-visual-clean.ps1
+.\visual-clean\install-visual-clean-task.ps1
+```
+
+Restauration : `.\visual-clean\restore-visual-clean.ps1`
+
+## Compiler soi-meme
+
+Prerequis : **VS 2022 Build Tools** (C++ + Windows SDK).
+
+```powershell
+.\native\build.ps1
+.\scripts\update-checksums.ps1
+.\apply.cmd
+```
+
+## Structure du depot
+
+| Chemin | Role |
+|--------|------|
+| `setup.ps1` | Installation guidee |
+| `bin/` | Binaires precompiles + `CHECKSUMS.sha256` |
+| `install-task.ps1` / `apply-at-logon.ps1` | Demarrage automatique |
+| `visual-clean/` | Profil performances visuelles |
+| `scripts/` | Verification install / checksums |
+| `native/` | Sources C++ |
 
 ## Limitations
 
-- **Windows 11 build ≥ 22621** (22H2+), testé sur **26200 (25H2)**
-- Si **Explorer redémarre** en session, relance `apply.cmd`
-- La tâche se déclenche au **logon**, pas au déverrouillage écran
-- Pas de modes blur/acrylic dynamiques (Clear uniquement)
-- Même fragilité que TranslucentTB si Microsoft change l'API XAML Diagnostics
+- Si **Explorer redemarre**, relancez `apply.cmd`
+- Tache au **logon**, pas au deverrouillage ecran seul
+- Clear uniquement (pas blur/acrylic dynamique)
+- Peut casser apres une MAJ Windows majeure
 
-## Pourquoi pas SWCA seul ?
+## Securite et confiance
 
-Un script PowerShell `SetWindowCompositionAttribute` one-shot **ne produit aucun rendu visible** sur 25H2 : Explorer repeint un calque XAML opaque. Pire : appeler SWCA *en plus* du TAP recouvre le fond transparent d'un accent DWM gris (bug corrigé dans ce projet).
+- [SECURITY.md](SECURITY.md) — injection, Defender, integrite
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) — credits MIT
+- [CONTRIBUTING.md](CONTRIBUTING.md) — contributions
 
-## Crédits
+## Credits
 
-- TAP / injection : adapté de [w11-theming-suite](https://github.com/decarvalhoe/w11-theming-suite) (MIT)
-- Inspiration architecture : [TranslucentTB](https://github.com/TranslucentTB/TranslucentTB) ExplorerTAP
+- TAP / injection : derive de [w11-theming-suite](https://github.com/decarvalhoe/w11-theming-suite) (MIT)
+- Inspiration : [TranslucentTB](https://github.com/TranslucentTB/TranslucentTB)
 
 ## Licence
 

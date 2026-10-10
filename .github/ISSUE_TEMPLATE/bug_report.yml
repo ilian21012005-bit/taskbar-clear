@@ -1,0 +1,40 @@
+name: Bug report
+description: La barre reste opaque, tache en echec, Defender, etc.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Joignez la sortie de `.\scripts\verify-installation.ps1` si possible.
+  - type: input
+    id: win_build
+    attributes:
+      label: Windows build
+      placeholder: "ex. 26200 (Win11 25H2)"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Etapes pour reproduire
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportement attendu
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportement observe
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Dernieres lignes de inject-at-logon.log ou TaskbarClear.log
+      render: shell

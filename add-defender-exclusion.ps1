@@ -16,8 +16,11 @@ if (-not $isAdmin) {
     exit $LASTEXITCODE
 }
 
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$binPath = Join-Path $here 'bin'
+$here = (Resolve-Path -LiteralPath (Split-Path -Parent $MyInvocation.MyCommand.Path)).Path
+$binPath = (Resolve-Path -LiteralPath (Join-Path $here 'bin')).Path
+if (-not $binPath.StartsWith($here, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Chemin bin invalide : $binPath"
+}
 
 if (-not (Test-Path -LiteralPath $binPath)) {
     throw "Dossier introuvable : $binPath"

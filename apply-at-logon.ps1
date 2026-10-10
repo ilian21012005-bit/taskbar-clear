@@ -6,8 +6,9 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$here = (Resolve-Path -LiteralPath (Split-Path -Parent $MyInvocation.MyCommand.Path)).Path
 $exe = Join-Path $here 'bin\inject-once.exe'
+$expectedBin = Join-Path $here 'bin'
 $stateDir = Join-Path $env:LOCALAPPDATA 'transparent-taskbar'
 $logPath = Join-Path $stateDir 'inject-at-logon.log'
 
@@ -28,7 +29,12 @@ try {
         throw "inject-once.exe introuvable : $exe (Defender en quarantaine ?)"
     }
 
-    $output = & $exe 2>&1 | Out-String
+    $resolvedExe = (Resolve-Path -LiteralPath $exe).Path
+    if (-not $resolvedExe.StartsWith($expectedBin, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Chemin inject-once.exe inattendu : $resolvedExe"
+    }
+
+    $output = & $resolvedExe 2>&1 | Out-String
     $code = $LASTEXITCODE
     Write-Log ("exit={0} {1}" -f $code, ($output.Trim() -replace '\s+', ' '))
 

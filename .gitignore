@@ -10,8 +10,11 @@ native/_upstream/
 # Old failed approach
 archive/
 
-# Logs
+# Logs (local user data pattern)
 *.log
+
+# Local state (never commit)
+visual-clean-backup.json
 
 # OS / IDE
 Thumbs.db

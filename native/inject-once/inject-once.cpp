@@ -4,10 +4,12 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <psapi.h>
+#include <shlwapi.h>
 #include <stdio.h>
 #include <string>
 
 #pragma comment(lib, "psapi.lib")
+#pragma comment(lib, "shlwapi.lib")
 
 static void Fail(const char* msg, DWORD err = GetLastError())
 {
@@ -26,6 +28,41 @@ static std::wstring GetDllPath()
         return L"";
     }
     return path.substr(0, slash + 1) + L"TaskbarClear.dll";
+}
+
+static bool IsTrustedDllPath(const std::wstring& dllPath)
+{
+    wchar_t exePath[MAX_PATH];
+    if (!GetModuleFileNameW(nullptr, exePath, MAX_PATH)) {
+        return false;
+    }
+
+    wchar_t exeDir[MAX_PATH];
+    wcscpy_s(exeDir, exePath);
+    if (!PathRemoveFileSpecW(exeDir)) {
+        return false;
+    }
+
+    wchar_t resolvedDll[MAX_PATH];
+    if (!GetFullPathNameW(dllPath.c_str(), MAX_PATH, resolvedDll, nullptr)) {
+        return false;
+    }
+
+    if (!PathFileExistsW(resolvedDll)) {
+        return false;
+    }
+
+    if (_wcsicmp(PathFindFileNameW(resolvedDll), L"TaskbarClear.dll") != 0) {
+        return false;
+    }
+
+    wchar_t dllDir[MAX_PATH];
+    wcscpy_s(dllDir, resolvedDll);
+    if (!PathRemoveFileSpecW(dllDir)) {
+        return false;
+    }
+
+    return _wcsicmp(exeDir, dllDir) == 0;
 }
 
 static DWORD FindExplorerPid()
@@ -133,9 +170,9 @@ static bool Inject(DWORD pid, const std::wstring& dllPath)
 int wmain()
 {
     std::wstring dll = GetDllPath();
-    if (dll.empty() || GetFileAttributesW(dll.c_str()) == INVALID_FILE_ATTRIBUTES) {
-        Fail("TaskbarClear.dll introuvable a cote de inject-once.exe", 0);
-        fprintf(stderr, "Cherche: chemin relatif a l'exe.\n");
+    if (dll.empty() || !IsTrustedDllPath(dll)) {
+        Fail("TaskbarClear.dll introuvable ou chemin non autorise (bin\\ adjacent a inject-once.exe)", 0);
+        fprintf(stderr, "Cherche uniquement: <dossier de inject-once.exe>\\TaskbarClear.dll\n");
         return 1;
     }
 

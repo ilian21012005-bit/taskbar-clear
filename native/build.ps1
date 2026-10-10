@@ -31,7 +31,7 @@ if exist "$out\TaskbarClear.dll" (
 ) else (
   move /y "$out\TaskbarClear_new.dll" "$out\TaskbarClear.dll" >nul
 )
-cl.exe /nologo /EHsc /O2 /MD /W3 /D_CRT_SECURE_NO_WARNINGS /DUNICODE /D_UNICODE "$inj\inject-once.cpp" /Fe:"$out\inject-once_new.exe" /Fo:"$obj\inject-once.obj" /link /MACHINE:X64 user32.lib psapi.lib
+cl.exe /nologo /EHsc /O2 /MD /W3 /D_CRT_SECURE_NO_WARNINGS /DUNICODE /D_UNICODE "$inj\inject-once.cpp" /Fe:"$out\inject-once_new.exe" /Fo:"$obj\inject-once.obj" /link /MACHINE:X64 user32.lib psapi.lib shlwapi.lib
 if errorlevel 1 exit /b 1
 move /y "$out\inject-once_new.exe" "$out\inject-once.exe" >nul
 if errorlevel 1 exit /b 1

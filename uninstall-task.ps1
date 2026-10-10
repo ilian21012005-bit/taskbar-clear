@@ -9,6 +9,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 Unregister-ScheduledTask -TaskName 'TransparentTaskbar-Once' -Confirm:$false -ErrorAction SilentlyContinue
+cmd /c 'schtasks /Delete /TN "TransparentTaskbar-Once" /F >nul 2>nul'
 Write-Host 'Tache TransparentTaskbar-Once supprimee.'
 
 if ($RestartExplorer) {
