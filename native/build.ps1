@@ -1,7 +1,34 @@
-# Build TaskbarClear.dll + inject-once.exe (requires VS 2022 Build Tools C++)
+# Build TaskbarClear.dll + inject-once.exe (requires VS 2022 Build Tools C++ + Windows SDK)
 $ErrorActionPreference = 'Stop'
-$vcvars = 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat'
-if (-not (Test-Path $vcvars)) { throw "vcvars64.bat introuvable" }
+
+function Find-VcVars64 {
+    $paths = @(
+        "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+        "${env:ProgramFiles}\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+        "${env:ProgramFiles}\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat",
+        "${env:ProgramFiles}\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    )
+    foreach ($p in $paths) {
+        if (Test-Path -LiteralPath $p) { return $p }
+    }
+
+    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    if (Test-Path -LiteralPath $vswhere) {
+        $install = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null
+        if ($install) {
+            $candidate = Join-Path $install 'VC\Auxiliary\Build\vcvars64.bat'
+            if (Test-Path -LiteralPath $candidate) { return $candidate }
+        }
+    }
+
+    return $null
+}
+
+$vcvars = Find-VcVars64
+$inDevShell = [bool]$env:VCToolsInstallDir -and [bool]$env:WindowsSdkDir
+if (-not $vcvars -and -not $inDevShell) {
+    throw 'vcvars64.bat introuvable. Installe VS 2022 Build Tools (C++ + Windows SDK).'
+}
 
 $root = Split-Path -Parent $PSScriptRoot
 if ((Split-Path -Leaf $PSScriptRoot) -ne 'native') {
@@ -18,11 +45,12 @@ $out = Join-Path $root 'bin'
 $obj = Join-Path $native 'obj'
 New-Item -ItemType Directory -Force -Path $out, $obj | Out-Null
 
+$vcvarsLine = if ($vcvars) { "call `"$vcvars`"`r`nif errorlevel 1 exit /b 1" } else { "rem MSVC deja dans PATH (Developer Shell)" }
+
 $tmp = Join-Path $env:TEMP 'build-taskbarclear.cmd'
 @"
 @echo off
-call "$vcvars"
-if errorlevel 1 exit /b 1
+$vcvarsLine
 cl.exe /nologo /LD /EHsc /O2 /MD /W3 /D_CRT_SECURE_NO_WARNINGS /DWIN32 /DNDEBUG /D_WINDOWS /D_USRDLL /I"$src" "$src\TaskbarClear.cpp" /Fe:"$out\TaskbarClear_new.dll" /Fo:"$obj\\" /link /DEF:"$src\TaskbarClear.def" /DLL /MACHINE:X64 ole32.lib oleaut32.lib uuid.lib user32.lib shlwapi.lib shell32.lib WindowsApp.lib
 if errorlevel 1 exit /b 1
 if exist "$out\TaskbarClear.dll" del /f "$out\TaskbarClear.dll" 2>nul
