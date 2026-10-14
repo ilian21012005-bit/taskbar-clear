@@ -26,7 +26,7 @@ foreach ($rel in @('bin\inject-once.exe', 'bin\TaskbarClear.dll', 'apply-at-logo
     }
 }
 
-foreach ($taskName in @('TransparentTaskbar-Once', 'VisualClean-Once')) {
+foreach ($taskName in @('TransparentTaskbar-Once', 'TransparentTaskbar-Unlock', 'VisualClean-Once')) {
     $task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
     if (-not $task) {
         Write-Host "SKIP tache absente: $taskName"
