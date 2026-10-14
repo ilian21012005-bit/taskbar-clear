@@ -80,7 +80,7 @@ function New-UnlockTriggerXmlTask {
     <Principal id="Author">
       <UserId>$userId</UserId>
       <LogonType>InteractiveToken</LogonType>
-      <RunLevel>Limited</RunLevel>
+      <RunLevel>LeastPrivilege</RunLevel>
     </Principal>
   </Principals>
   <Settings>
