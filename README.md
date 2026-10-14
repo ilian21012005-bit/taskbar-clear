@@ -25,6 +25,7 @@ Barre des taches **100 % transparente** (mode Clear) sur **Windows 11**, sans Tr
 git clone https://github.com/ilian21012005-bit/taskbar-clear.git
 cd taskbar-clear
 .\setup.ps1
+# ou sans questions : .\setup.ps1 -Silent
 ```
 
 Le script :
@@ -128,10 +129,15 @@ Prerequis : **VS 2022 Build Tools** (C++ + Windows SDK).
 - [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) — credits MIT
 - [CONTRIBUTING.md](CONTRIBUTING.md) — contributions
 
+## Projets proches
+
+Comparatif TranslucentTB, w11-theming-suite, Windhawk, etc. : [docs/RELATED_PROJECTS.md](docs/RELATED_PROJECTS.md)  
+Evolutions prevues (sans processus resident) : [ROADMAP.md](ROADMAP.md)
+
 ## Credits
 
 - TAP / injection : derive de [w11-theming-suite](https://github.com/decarvalhoe/w11-theming-suite) (MIT)
-- Inspiration : [TranslucentTB](https://github.com/TranslucentTB/TranslucentTB)
+- Inspiration fiabilite TAP : [TranslucentTB](https://github.com/TranslucentTB/TranslucentTB) (ExplorerTAP)
 
 ## Licence
 

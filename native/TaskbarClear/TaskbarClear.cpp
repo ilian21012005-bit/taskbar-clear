@@ -19,7 +19,10 @@
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "WindowsApp.lib")
 
-// ── Debug logging ──
+// ── Debug logging (desactive en Release / NDEBUG — zero I/O disque en prod) ──
+#ifdef NDEBUG
+static void DebugLog(const char*, ...) {}
+#else
 static FILE* g_logFile = nullptr;
 
 static void DebugLog(const char* fmt, ...)
@@ -42,6 +45,7 @@ static void DebugLog(const char* fmt, ...)
     fprintf(g_logFile, "\n");
     fflush(g_logFile);
 }
+#endif
 
 // ── Globals ──
 HMODULE g_hModule = nullptr;
@@ -122,7 +126,8 @@ static DWORD WINAPI SelfInjectThread(LPVOID)
         }, &args, 0, nullptr);
 
         if (hThread) {
-            WaitForSingleObject(hThread, 5000);
+            // Aligne TranslucentTB ExplorerTAP (~35 s max par tentative IXDE)
+            WaitForSingleObject(hThread, 35000);
             CloseHandle(hThread);
             hr = args.hr;
         }

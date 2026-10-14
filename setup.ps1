@@ -7,6 +7,7 @@
 #>
 [CmdletBinding()]
 param(
+    [switch]$Silent,
     [switch]$SkipVisualClean,
     [switch]$SkipDefenderPrompt,
     [switch]$NoApplyNow
@@ -36,6 +37,11 @@ function Test-Binaries {
             throw "Fichier manquant : $path"
         }
     }
+}
+
+if ($Silent) {
+    $SkipDefenderPrompt = $true
+    $SkipVisualClean = $true
 }
 
 Write-Host '=== TaskbarClear — installation ===' -ForegroundColor Cyan

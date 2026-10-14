@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build release binaries
+        shell: pwsh
+        run: .\native\build.ps1
+
+      - name: Update and verify checksums
+        shell: pwsh
+        run: |
+          .\scripts\update-checksums.ps1
+          .\scripts\verify-checksums.ps1
+
+      - name: Pack zip
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $zip = "taskbar-clear-$tag-win-x64.zip"
+          Compress-Archive -Path @(
+            'bin\inject-once.exe',
+            'bin\TaskbarClear.dll',
+            'bin\CHECKSUMS.sha256'
+          ) -DestinationPath $zip -Force
+          echo "ZIP=$zip" >> $env:GITHUB_ENV
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh release create "${{ github.ref_name }}" "${{ env.ZIP }}" `
+            --title "TaskbarClear ${{ github.ref_name }}" `
+            --generate-notes

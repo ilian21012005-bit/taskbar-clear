@@ -39,8 +39,11 @@ $action = New-ScheduledTaskAction `
     -Execute 'powershell.exe' `
     -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$wrapper`"" `
     -WorkingDirectory $here
-$trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
-$trigger.Delay = 'PT30S'
+$logonTrigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+$logonTrigger.Delay = 'PT30S'
+# Re-injecte si Explorer a redemarre apres verrouillage (zero processus resident).
+$unlockTrigger = New-ScheduledTaskTrigger -AtSessionUnlock -User $env:USERNAME
+$unlockTrigger.Delay = 'PT5S'
 $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries `
@@ -52,7 +55,7 @@ $settings = New-ScheduledTaskSettingsSet `
 Register-ScheduledTask `
     -TaskName $taskName `
     -Action $action `
-    -Trigger $trigger `
+    -Trigger @($logonTrigger, $unlockTrigger) `
     -Principal $principal `
     -Settings $settings `
     -Description 'Injecte TaskbarClear.dll dans explorer.exe au logon (+30s), puis se termine.' `
@@ -60,7 +63,7 @@ Register-ScheduledTask `
 
 $info = Get-ScheduledTask -TaskName $taskName
 Write-Host ("Tache installee : {0}" -f $info.TaskName)
-Write-Host 'Declencheur     : ouverture de session +30s'
+Write-Host 'Declencheurs    : logon +30s, deverrouillage session +5s'
 Write-Host ("RunLevel        : {0}" -f $info.Principal.RunLevel)
 Write-Host 'Journal logon   : %LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log'
 Write-Host ''
