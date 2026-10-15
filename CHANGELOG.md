@@ -4,28 +4,29 @@ Format base sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-10-15
+
 ### Added
 
-- Retry inject-once au logon (3 tentatives), `install-all.ps1`, `docs/COMPATIBILITY.md`
-- Badges CI/release README
+- Hook init TAP (`WH_CALLWNDPROC`) retire apres IXDE — fiabilite boot type TranslucentTB
+- [docs/FAQ.md](docs/FAQ.md), banniere [docs/assets/social-preview.svg](docs/assets/social-preview.svg)
 
 ### Changed
 
-- Binaires `main` synchronises avec release v1.2.0
-- `verify-installation.ps1` ignore le code 267011 (tache jamais lancee)
+- README one-liner, topics GitHub, description repo
 
 ## [1.2.0] - 2026-10-15
 
 ### Added
 
 - `docs/RELATED_PROJECTS.md`, `ROADMAP.md`, `RELEASING.md`
-- Declencheur tache planifiee au **deverrouillage session**
-- `setup.ps1 -Silent`, `scripts/release-github.ps1`
+- Retry logon, `install-all.ps1`, `docs/COMPATIBILITY.md`, badges README
+- Declencheur **deverrouillage session**, `setup.ps1 -Silent`, `scripts/release-github.ps1`
 
 ### Changed
 
-- DLL Release : **DebugLog desactive** (`NDEBUG`)
-- Timeout thread IXDE porte a **35 s** (alignement TranslucentTB)
+- DLL Release : **DebugLog desactive** (`NDEBUG`), timeout IXDE **35 s**
+- Binaires sync release, `verify-installation` ignore 267011
 - `install-task.ps1` : logon +30 s et unlock +5 s
 
 ## [1.1.0] - 2026-10-07
@@ -53,7 +54,8 @@ Format base sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 - inject-once.exe (injection one-shot Explorer)
 - Tache planifiee TransparentTaskbar-Once
 
-[Unreleased]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ilian21012005-bit/taskbar-clear/releases/tag/v1.0.0

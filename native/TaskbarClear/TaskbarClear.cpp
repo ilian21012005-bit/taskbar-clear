@@ -56,6 +56,63 @@ IXamlDiagnostics* g_pDiagnostics = nullptr;
 TaskbarAppearance g_appearance = APPEARANCE_TRANSPARENT;
 VisualTreeWatcher* g_pWatcher = nullptr;
 
+// ── Init sync (TranslucentTB-style, hook retire apres IXDE — idle = 0) ──
+static HANDLE g_tapReadyEvent = nullptr;
+static HHOOK g_callWndHook = nullptr;
+
+static void SignalTapReady()
+{
+    if (g_tapReadyEvent) {
+        SetEvent(g_tapReadyEvent);
+    }
+}
+
+static void UninstallTapInitHook()
+{
+    if (g_callWndHook) {
+        UnhookWindowsHookEx(g_callWndHook);
+        g_callWndHook = nullptr;
+    }
+}
+
+static LRESULT CALLBACK TapInitCallWndProc(int code, WPARAM wParam, LPARAM lParam)
+{
+    if (code >= 0) {
+        SignalTapReady();
+    }
+    return CallNextHookEx(g_callWndHook, code, wParam, lParam);
+}
+
+static bool InstallTapInitHook()
+{
+    HWND tray = FindWindowW(L"Shell_TrayWnd", nullptr);
+    if (!tray) {
+        return false;
+    }
+
+    DWORD tid = GetWindowThreadProcessId(tray, nullptr);
+    if (!tid) {
+        return false;
+    }
+
+    if (!g_tapReadyEvent) {
+        g_tapReadyEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    }
+    ResetEvent(g_tapReadyEvent);
+
+    UninstallTapInitHook();
+    g_callWndHook = SetWindowsHookExW(WH_CALLWNDPROC, TapInitCallWndProc, g_hModule, tid);
+    return g_callWndHook != nullptr;
+}
+
+static bool WaitTapReady(DWORD timeoutMs)
+{
+    if (!g_tapReadyEvent) {
+        return false;
+    }
+    return WaitForSingleObject(g_tapReadyEvent, timeoutMs) == WAIT_OBJECT_0;
+}
+
 // ══════════════════════════════════════════════
 // Stage 2: Self-injection into XAML Diagnostics
 // This runs inside explorer.exe after LoadLibrary injection.
@@ -119,6 +176,9 @@ static DWORD WINAPI SelfInjectThread(LPVOID)
         args.dllPath = dllPath;
         args.hr = E_FAIL;
 
+        InstallTapInitHook();
+
+        bool tapReady = false;
         HANDLE hThread = CreateThread(nullptr, 0, [](LPVOID param) -> DWORD {
             auto* a = (IxdeArgs*)param;
             a->hr = a->pfn(a->conn, a->pid, nullptr, a->dllPath, CLSID_TaskbarTAPSite, nullptr);
@@ -126,14 +186,20 @@ static DWORD WINAPI SelfInjectThread(LPVOID)
         }, &args, 0, nullptr);
 
         if (hThread) {
-            // Aligne TranslucentTB ExplorerTAP (~35 s max par tentative IXDE)
-            WaitForSingleObject(hThread, 35000);
+            tapReady = WaitTapReady(35000);
+            WaitForSingleObject(hThread, 5000);
             CloseHandle(hThread);
             hr = args.hr;
+            if (tapReady && FAILED(hr)) {
+                hr = S_OK;
+            }
         }
 
-        if (SUCCEEDED(hr)) {
-            DebugLog("IXDE succeeded on attempt %d", (int)attempts);
+        UninstallTapInitHook();
+
+        if (SUCCEEDED(hr) || tapReady) {
+            DebugLog("IXDE succeeded on attempt %d (tapReady=%d)", (int)attempts, tapReady ? 1 : 0);
+            hr = S_OK;
             break;
         }
 
@@ -336,6 +402,7 @@ HRESULT TaskbarTAPSite::SetSite(IUnknown* pUnkSite)
         CloseHandle(hThread);
     }
 
+    SignalTapReady();
     return S_OK;
 }
 

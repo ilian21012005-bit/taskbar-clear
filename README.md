@@ -7,6 +7,8 @@
 
 Barre des taches **100 % transparente** (mode Clear) sur **Windows 11**, sans TranslucentTB ni Windhawk.
 
+> **One-liner** : `git clone https://github.com/ilian21012005-bit/taskbar-clear && cd taskbar-clear && .\setup.ps1 -Silent`
+
 - **Zero processus resident** — injection ~200 ms au logon, puis exit
 - **Pas de hook global** sur fenetres / jeux — petite DLL dans `explorer.exe` uniquement
 - **Optionnel** : profil `visual-clean` (animations OFF, registre HKCU)
@@ -73,6 +75,8 @@ Avec restauration des effets visuels (si `visual-clean` installe) :
 ```
 
 Journal logon : `%LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log`
+
+FAQ (Defender, FPS, conflits) : [docs/FAQ.md](docs/FAQ.md)
 
 ## Comment ca marche
 
