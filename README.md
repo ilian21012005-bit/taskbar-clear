@@ -1,6 +1,8 @@
 # TaskbarClear
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build](https://github.com/ilian21012005-bit/taskbar-clear/actions/workflows/build.yml/badge.svg)](https://github.com/ilian21012005-bit/taskbar-clear/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/ilian21012005-bit/taskbar-clear?label=release)](https://github.com/ilian21012005-bit/taskbar-clear/releases/latest)
 [![Windows 11](https://img.shields.io/badge/Windows-11%20(22H2%2B)-0078D4)](https://www.microsoft.com/windows)
 
 Barre des taches **100 % transparente** (mode Clear) sur **Windows 11**, sans TranslucentTB ni Windhawk.
@@ -132,7 +134,14 @@ Prerequis : **VS 2022 Build Tools** (C++ + Windows SDK).
 ## Projets proches
 
 Comparatif TranslucentTB, w11-theming-suite, Windhawk, etc. : [docs/RELATED_PROJECTS.md](docs/RELATED_PROJECTS.md)  
+Builds Windows testes : [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)  
 Evolutions prevues (sans processus resident) : [ROADMAP.md](ROADMAP.md)
+
+### Apres un reboot (test rapide)
+
+1. ~30 s apres login : barre transparente
+2. `.\scripts\verify-installation.ps1`
+3. Log : `%LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log` (lignes `exit=0`)
 
 ## Credits
 

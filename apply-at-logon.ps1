@@ -1,7 +1,10 @@
 #Requires -Version 5.1
 # Wrapper logon : attend Explorer, lance inject-once, journalise le resultat.
 [CmdletBinding()]
-param()
+param(
+    [int]$MaxAttempts = 3,
+    [int]$RetryDelaySeconds = 12
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -34,13 +37,24 @@ try {
         throw "Chemin inject-once.exe inattendu : $resolvedExe"
     }
 
-    $output = & $resolvedExe 2>&1 | Out-String
-    $code = $LASTEXITCODE
-    Write-Log ("exit={0} {1}" -f $code, ($output.Trim() -replace '\s+', ' '))
+    $lastCode = 1
+    $lastOutput = ''
 
-    if ($code -ne 0) {
-        exit $code
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        $lastOutput = (& $resolvedExe 2>&1 | Out-String).Trim()
+        $lastCode = $LASTEXITCODE
+        Write-Log ("attempt={0}/{1} exit={2} {3}" -f $attempt, $MaxAttempts, $lastCode, ($lastOutput -replace '\s+', ' '))
+
+        if ($lastCode -eq 0) {
+            exit 0
+        }
+
+        if ($attempt -lt $MaxAttempts) {
+            Start-Sleep -Seconds $RetryDelaySeconds
+        }
     }
+
+    exit $lastCode
 }
 catch {
     Write-Log ("ERREUR: {0}" -f $_.Exception.Message)

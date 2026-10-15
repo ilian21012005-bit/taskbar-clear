@@ -34,8 +34,12 @@ foreach ($taskName in @('TransparentTaskbar-Once', 'TransparentTaskbar-Unlock', 
     }
     $info = Get-ScheduledTaskInfo -TaskName $taskName
     Write-Host ("OK  {0} LastRun={1} Result={2}" -f $taskName, $info.LastRunTime, $info.LastTaskResult)
-    if ($taskName -eq 'TransparentTaskbar-Once' -and $info.LastTaskResult -ne 0) {
-        Add-Issue "Derniere execution TransparentTaskbar-Once en echec: $($info.LastTaskResult)"
+
+    # 267011 (0x41303) = tache jamais executée — normal avant premier logon/unlock
+    $neverRun = 267011
+    $isTaskbar = $taskName -like 'TransparentTaskbar-*'
+    if ($isTaskbar -and $info.LastTaskResult -ne 0 -and $info.LastTaskResult -ne $neverRun) {
+        Add-Issue "Derniere execution $taskName en echec: $($info.LastTaskResult)"
     }
 }
 

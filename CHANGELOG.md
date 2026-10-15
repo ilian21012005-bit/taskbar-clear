@@ -4,6 +4,16 @@ Format base sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Retry inject-once au logon (3 tentatives), `install-all.ps1`, `docs/COMPATIBILITY.md`
+- Badges CI/release README
+
+### Changed
+
+- Binaires `main` synchronises avec release v1.2.0
+- `verify-installation.ps1` ignore le code 267011 (tache jamais lancee)
+
 ## [1.2.0] - 2026-10-15
 
 ### Added
