@@ -17,7 +17,7 @@ Barre des taches **100 % transparente** (mode Clear) sur **Windows 11**, sans Tr
 
 ![TaskbarClear sur Windows 11 25H2 — barre transparente, fond bureau visible](docs/assets/clear-desktop-win11.png)
 
-*Capture : build **26200** (25H2), mode Clear — [signaler une incompatibilite](.github/ISSUE_TEMPLATE/compatibility_report.yml)*
+*Capture : build **26200** (25H2), mode Clear — [signaler une incompatibilite](https://github.com/ilian21012005-bit/taskbar-clear/issues/new/choose)*
 
 ## Prerequis
 
