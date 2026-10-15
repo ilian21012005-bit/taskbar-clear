@@ -15,6 +15,10 @@ Barre des taches **100 % transparente** (mode Clear) sur **Windows 11**, sans Tr
 
 > **Avertissement** : technique d'injection DLL dans Explorer (API non officielle Microsoft). Lisez [SECURITY.md](SECURITY.md) avant installation.
 
+![TaskbarClear sur Windows 11 25H2 — barre transparente, fond bureau visible](docs/assets/clear-desktop-win11.png)
+
+*Capture : build **26200** (25H2), mode Clear — [signaler une incompatibilite](.github/ISSUE_TEMPLATE/compatibility_report.yml)*
+
 ## Prerequis
 
 | Element | Detail |

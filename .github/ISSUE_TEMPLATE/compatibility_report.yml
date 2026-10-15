@@ -1,0 +1,55 @@
+name: Compatibilite Windows
+description: Barre opaque ou echec sur une build Windows 11 specifique
+title: "[Compat]: "
+labels: ["compatibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de joindre la sortie de `.\scripts\verify-installation.ps1` et les dernieres lignes de `inject-at-logon.log`.
+  - type: input
+    id: win_build
+    attributes:
+      label: Build Windows (winver)
+      placeholder: "ex. 26200.6892 — Windows 11 25H2"
+    validations:
+      required: true
+  - type: dropdown
+    id: symptom
+    attributes:
+      label: Symptome principal
+      options:
+        - Barre opaque au logon
+        - Barre opaque apres deverrouillage
+        - inject-once.exe supprime / Defender
+        - Explorer instable / crash
+        - Autre
+    validations:
+      required: true
+  - type: input
+    id: release
+    attributes:
+      label: Version TaskbarClear
+      placeholder: "ex. v1.2.1 (release GitHub ou commit)"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Deja essaye
+      options:
+        - label: add-defender-exclusion.ps1 (admin)
+        - label: install-task.ps1 + apply.cmd
+        - label: verify-checksums.ps1 OK
+        - label: Reboot complet
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / sortie verify
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Contexte (TranslucentTB, Windhawk, multi-ecrans, etc.)

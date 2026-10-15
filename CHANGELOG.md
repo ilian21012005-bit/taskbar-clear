@@ -4,6 +4,11 @@ Format base sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Capture README `docs/assets/clear-desktop-win11.png`
+- Issues templates compatibilite + idees
+
 ## [1.2.1] - 2026-10-15
 
 ### Added

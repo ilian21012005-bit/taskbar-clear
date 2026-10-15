@@ -1,15 +1,17 @@
 # Assets
 
-## Social preview GitHub (1280×640)
+## Captures
 
-1. Ouvrez `social-preview.svg` dans un navigateur ou Inkscape.
-2. Exportez en PNG `social-preview.png`.
-3. GitHub → **Settings** → **Social preview** → upload.
+| Fichier | Usage |
+|---------|--------|
+| `clear-desktop-win11.png` | README — Clear sur build 26200 (25H2) |
+| `social-preview.svg` | Source banniere GitHub (1280×640) |
 
-Texte court pour la description repo :
+### Social preview GitHub
 
-> Barre des taches transparente (Clear) sur Windows 11 — zero process resident, TAP XAML one-shot.
+1. Utilisez **`clear-desktop-win11.png`** (deja fourni) **ou** exportez `social-preview.svg` en PNG.
+2. Repo GitHub → **Settings** → **Social preview** → **Upload an image**.
 
-## Captures d'ecran (optionnel)
+## Ajouter une capture
 
-Ajoutez `clear-desktop.png` et `clear-taskbar-closeup.png` ici pour enrichir le README.
+Nommez `clear-<build>.png` et ouvrez une PR ; mettez a jour [COMPATIBILITY.md](../COMPATIBILITY.md).

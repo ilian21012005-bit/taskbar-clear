@@ -4,7 +4,7 @@
 |-------|-------------------|--------------------|-------|
 | 22621+ | Windows 11 22H2+ | Oui | TAP XAML requis |
 | 26100 | 24H2 | Oui | Teste communautaire |
-| 26200 | 25H2 | Oui | Machine mainteneur |
+| 26200 | 25H2 | Oui | Teste mainteneur + [capture README](../docs/assets/clear-desktop-win11.png) |
 | 22621 (21H2 barre classique) | 11 21H2 | Partiel | SWCA seul parfois suffisant ; TAP selon shell |
 
 ## Non supporte

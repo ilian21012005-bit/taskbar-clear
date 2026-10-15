@@ -31,7 +31,11 @@ Merci de votre interet pour TaskbarClear.
 
 ## Issues
 
-Utilisez les modeles GitHub. Joignez :
+- **Compatibilite Windows** : modele *Compatibilite Windows* + build `winver` + logs
+- **Bug** : modele bug standard
+- **Idees** : modele *Idee* (zero process resident)
+
+Joignez toujours :
 
 - Build Windows (`winver`)
 - Sortie de `.\scripts\verify-installation.ps1`

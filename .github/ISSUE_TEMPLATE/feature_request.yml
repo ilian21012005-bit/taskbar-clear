@@ -1,0 +1,32 @@
+name: Idee / amelioration
+description: Proposition compatible zero process resident
+title: "[Idea]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        TaskbarClear vise **Clear only**, **zero exe resident**, **pas de hooks jeux**.
+        Les idees blur/IPC/tray seront probablement refuses.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Probleme ou besoin
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution proposee
+    validations:
+      required: true
+  - type: dropdown
+    id: perf
+    attributes:
+      label: Impact perf estime
+      options:
+        - Aucun (doc / script one-shot)
+        - Evenement logon uniquement
+        - Process resident (hors scope)
+    validations:
+      required: true
