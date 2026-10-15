@@ -40,8 +40,10 @@ Le script :
 
 1. Verifie OS et binaires
 2. Propose l'exclusion Defender (fortement recommande)
-3. Installe la tache `TransparentTaskbar-Once` (logon +30 s)
+3. Installe les taches logon (+30 s) et deverrouillage (+5 s)
 4. Applique Clear immediatement
+
+Guide detaille : **[docs/INSTALL.md](docs/INSTALL.md)** · Depannage : **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)**
 
 ### Etape Defender (important)
 
@@ -80,7 +82,7 @@ Avec restauration des effets visuels (si `visual-clean` installe) :
 
 Journal logon : `%LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log`
 
-FAQ (Defender, FPS, conflits) : [docs/FAQ.md](docs/FAQ.md)
+**Documentation** : [docs/README.md](docs/README.md) (hub) · [FAQ](docs/FAQ.md)
 
 ## Comment ca marche
 
@@ -128,28 +130,24 @@ Prerequis : **VS 2022 Build Tools** (C++ + Windows SDK).
 
 ## Limitations
 
-- Si **Explorer redemarre**, relancez `apply.cmd`
-- Tache au **logon**, pas au deverrouillage ecran seul
+- Si **Explorer redemarre**, relancez `apply.cmd` (ou attendez le deverrouillage session)
 - Clear uniquement (pas blur/acrylic dynamique)
 - Peut casser apres une MAJ Windows majeure
+- API non officielle Microsoft
 
-## Securite et confiance
+## Documentation
 
-- [SECURITY.md](SECURITY.md) — injection, Defender, integrite
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) — credits MIT
-- [CONTRIBUTING.md](CONTRIBUTING.md) — contributions
-
-## Projets proches
-
-Comparatif TranslucentTB, w11-theming-suite, Windhawk, etc. : [docs/RELATED_PROJECTS.md](docs/RELATED_PROJECTS.md)  
-Builds Windows testes : [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)  
-Evolutions prevues (sans processus resident) : [ROADMAP.md](ROADMAP.md)
-
-### Apres un reboot (test rapide)
-
-1. ~30 s apres login : barre transparente
-2. `.\scripts\verify-installation.ps1`
-3. Log : `%LOCALAPPDATA%\transparent-taskbar\inject-at-logon.log` (lignes `exit=0`)
+| Lien | Sujet |
+|------|--------|
+| [docs/README.md](docs/README.md) | Hub documentation |
+| [docs/INSTALL.md](docs/INSTALL.md) | Installation / MAJ |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Depannage |
+| [docs/FAQ.md](docs/FAQ.md) | FPS, Defender, conflits |
+| [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) | Builds Windows |
+| [docs/RELATED_PROJECTS.md](docs/RELATED_PROJECTS.md) | Ecosysteme |
+| [SECURITY.md](SECURITY.md) | Securite, checksums |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribuer |
+| [ROADMAP.md](ROADMAP.md) | Evolutions |
 
 ## Credits
 

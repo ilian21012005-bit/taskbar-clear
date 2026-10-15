@@ -4,17 +4,23 @@ Format base sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-10-15
+
 ### Added
 
-- Capture README `docs/assets/clear-desktop-win11.png`
-- Issues templates compatibilite + idees
+- Hub [docs/README.md](docs/README.md), [INSTALL.md](docs/INSTALL.md), [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+- FAQ enrichie, table documentation README
+
+### Changed
+
+- README : liens doc, limitations a jour (unlock)
 
 ## [1.2.1] - 2026-10-15
 
 ### Added
 
 - Hook init TAP (`WH_CALLWNDPROC`) retire apres IXDE — fiabilite boot type TranslucentTB
-- [docs/FAQ.md](docs/FAQ.md), banniere [docs/assets/social-preview.svg](docs/assets/social-preview.svg)
+- Capture README, issues templates, [docs/FAQ.md](docs/FAQ.md), [social-preview.svg](docs/assets/social-preview.svg)
 
 ### Changed
 
@@ -59,7 +65,8 @@ Format base sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 - inject-once.exe (injection one-shot Explorer)
 - Tache planifiee TransparentTaskbar-Once
 
-[Unreleased]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ilian21012005-bit/taskbar-clear/compare/v1.0.0...v1.1.0
